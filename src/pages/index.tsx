@@ -7,7 +7,7 @@ const TaskManager = dynamic(() => import("@/components/TaskManager"), {
 
 export default function Home({ data }: { data: ITaskApiResponse }) {
   return (
-    <div className="flex min-w-full items-center justify-center">
+    <div className="flex min-w-full items-center justify-center h-screen">
       <TaskManager data={data} />
     </div>
   );

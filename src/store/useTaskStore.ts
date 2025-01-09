@@ -27,6 +27,7 @@ interface TaskState {
 
   // Actions/Setters
   setTasks: (tasks: ITask[]) => void;
+  updateTask: (task: ITask) => void
   setSearchQuery: (query: string) => void;
   setSorting: (field: string, order: SortOrder) => void;
   setCurrentTab: (tab: TabState) => void;
@@ -52,6 +53,14 @@ const useTaskStore = create<TaskState>()(
 
       // Setter functions
       setTasks: (tasks: ITask[]) => set({ tasks }),
+      updateTask: (task: ITask) => {
+        const state = get();
+        const updatedTasks = state.tasks.map((t) =>
+          t.id === task.id ? task : t
+        );
+        set({ tasks: updatedTasks });
+      },
+
       setSearchQuery: (query) => set({ searchQuery: query }),
       setSorting: (field, order) =>
         set({

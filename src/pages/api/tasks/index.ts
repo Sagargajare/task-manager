@@ -47,7 +47,7 @@ export default function handler(
   if (method === "GET") {
     const {
       status,
-      limit = "30",
+      limit = "100",
       offset = "0",
     }: { status?: string; limit?: string; offset?: string } = req.query;
 

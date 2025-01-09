@@ -1,7 +1,7 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ITask, ITaskApiResponse } from "@/types";
+import { ITaskApiResponse } from "@/types";
 import TaskTable from "./TaskTable";
 import { Input } from "../ui/input";
 import useTaskStore from "@/store/useTaskStore";
@@ -22,14 +22,14 @@ const TaskManager = ({ data }: { data: ITaskApiResponse }) => {
 
   useEffect(() => {
     setTasks(data.tasks);
-  }, [data.tasks]);
+  }, [data.tasks, setTasks]);
 
   const openTasks = getTasksByStatus("OPEN");
   const closedTasks = getTasksByStatus("CLOSED");
   const inProgressTasks = getTasksByStatus("IN_PROGRESS");
 
   return (
-    <div className="w-[300px] xs:w-[500px] md:w-[1200px] sm:w-[500] p-0 sm:p-4 md:p-20">
+    <div className="w-[300px] xs:w-[500px] md:w-[1200px] sm:w-[500] p-0 sm:p-4 md:p-20 h-screen overflow-hidden">
       <div className="flex items-center py-4 justify-between">
         <div className="relative max-w-2xl">
           <Input
@@ -53,6 +53,7 @@ const TaskManager = ({ data }: { data: ITaskApiResponse }) => {
       <Tabs
         defaultValue={currentTab}
         value={currentTab}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onValueChange={(tab) => setCurrentTab(tab as any)}
       >
         <TabsList className="grid w-full grid-cols-3">
