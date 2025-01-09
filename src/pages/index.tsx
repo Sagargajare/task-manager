@@ -1,6 +1,9 @@
 import { GetServerSideProps } from "next";
-import TaskManager from "@/components/TaskManager";
+import dynamic from "next/dynamic";
 import { ITaskApiResponse } from "@/types";
+const TaskManager = dynamic(() => import("@/components/TaskManager"), { 
+  ssr: false 
+});
 
 export default function Home({ data }: { data: ITaskApiResponse }) {
   return (
