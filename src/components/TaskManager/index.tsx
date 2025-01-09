@@ -18,15 +18,14 @@ const TaskManager = ({ data }: { data: ITaskApiResponse }) => {
     searchQuery,
     setSearchQuery,
     setSorting,
+    getFilteredTasks
   } = useTaskStore();
 
   useEffect(() => {
     setTasks(data.tasks);
   }, [data.tasks, setTasks]);
 
-  const openTasks = getTasksByStatus("OPEN");
-  const closedTasks = getTasksByStatus("CLOSED");
-  const inProgressTasks = getTasksByStatus("IN_PROGRESS");
+  const activeTabTasks = getTasksByStatus(currentTab);
 
   return (
     <div className="w-[300px] xs:w-[500px] md:w-[1200px] sm:w-[500] p-0 sm:p-4 md:p-20 h-screen overflow-hidden">
@@ -57,22 +56,22 @@ const TaskManager = ({ data }: { data: ITaskApiResponse }) => {
         onValueChange={(tab) => setCurrentTab(tab as any)}
       >
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="OPEN">Open {openTasks.length}</TabsTrigger>
+          <TabsTrigger value="OPEN">Open {currentTab == "OPEN"?activeTabTasks.length:""}</TabsTrigger>
           <TabsTrigger value="IN_PROGRESS">
-            In Progress {inProgressTasks.length}
+            In Progress {currentTab == "IN_PROGRESS"?activeTabTasks.length:""}
           </TabsTrigger>
           <TabsTrigger value="CLOSED">
-            Completed {closedTasks.length}
+            Completed {currentTab == "CLOSED"?activeTabTasks.length:""}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="OPEN">
-          <TaskTable tasks={openTasks} />
+          <TaskTable tasks={getFilteredTasks()} />
         </TabsContent>
         <TabsContent value="IN_PROGRESS">
-          <TaskTable tasks={inProgressTasks} />
+          <TaskTable tasks={getFilteredTasks()} />
         </TabsContent>
         <TabsContent value="CLOSED">
-          <TaskTable tasks={closedTasks} />
+          <TaskTable tasks={getFilteredTasks()} />
         </TabsContent>
       </Tabs>
     </div>

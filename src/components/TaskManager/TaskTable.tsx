@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Table,
   TableBody,
@@ -52,6 +52,7 @@ const PRIORITY_STYLES: Record<string, string> = {
 const TaskTable = ({ tasks }: Props) => {
   const [activeRowIndex, setActiveRowIndex] = useState<number | null>(null);
   const { openDialog } = useDialogStore();
+  const { loading, loadMore } = useTaskStore();
 
   // Handle global keyboard navigation
   useEffect(() => {
@@ -92,9 +93,33 @@ const TaskTable = ({ tasks }: Props) => {
     
   }, [activeRowIndex]);
 
+  const observerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loading) {
+          console.log("Load more tasks");
+          loadMore();
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observer.unobserve(observerRef.current);
+      }
+    };
+  }, [loading]);
+
   return (
     <div className="relative w-full rounded-md border h-full">
-      <div className="max-h-[calc(100vh-12rem)] overflow-y-auto">
+      <div className="max-h-[calc(100vh-15rem)] overflow-y-auto">
         <Table>
           <TableHeader className="sticky top-0 bg-white z-10">
             <TableRow>
@@ -175,7 +200,15 @@ const TaskTable = ({ tasks }: Props) => {
                 </TableCell>
               </TableRow>
             )}
+            {loading && (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center">
+                  Loading...
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
+          <div ref={observerRef} />
         </Table>
       </div>
       <TaskModalForm />

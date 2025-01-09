@@ -20,10 +20,17 @@ const PRIORITIES: Record<string, number> = {
 // Define the shape of the task state
 interface TaskState {
   tasks: ITask[];
+  allTasks: ITask[];
   searchQuery: string;
   sortField: string;
   sortOrder: SortOrder;
   currentTab: TabState;
+  hasMore: boolean;
+  currentPage: number;
+  itemsPerPage: number;
+  totalPages: number;
+  loading: boolean;
+  loadMore: () => void;
 
   // Actions/Setters
   setTasks: (tasks: ITask[]) => void;
@@ -46,13 +53,37 @@ const useTaskStore = create<TaskState>()(
   persist(
     (set, get) => ({
       tasks: [],
+      allTasks: [],
       searchQuery: "",
       sortField: "created_at",
       sortOrder: 1,
       currentTab: "OPEN",
+      hasMore: true,
+      currentPage: 1,
+      itemsPerPage: 30,
+      totalPages: 999,
+      loading: false,
 
       // Setter functions
-      setTasks: (tasks: ITask[]) => set({ tasks }),
+      setTasks: (tasks: ITask[]) => {
+        set({ allTasks:tasks, tasks: tasks.slice(0, get().itemsPerPage) });
+        set({ totalPages: Math.ceil(tasks.length / get().itemsPerPage) });
+      },
+
+      loadMore: () => {
+        const state = get();
+        if (!state.hasMore) return;
+        set({ loading: true });
+        setTimeout(() => {
+          const start = state.currentPage * state.itemsPerPage;
+          const end = start + state.itemsPerPage;
+          const newTasks = state.allTasks.slice(start, end);
+          set({ tasks: [...state.tasks, ...newTasks] });
+          set({ currentPage: state.currentPage + 1 });
+          set({ hasMore: state.currentPage < state.totalPages });
+          set({ loading: false });
+        }, 1000);
+      },
       updateTask: (task: ITask) => {
         const state = get();
         const updatedTasks = state.tasks.map((t) =>
