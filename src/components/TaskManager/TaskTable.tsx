@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
 import { ArrowDownWideNarrow, ArrowUpWideNarrow } from "lucide-react";
 import useTaskStore from "@/store/useTaskStore";
+import clsx from "clsx";
 
 type Props = {
   tasks: ITask[];
@@ -47,6 +48,26 @@ const PRIORITY_STYLES: Record<string, string> = {
 };
 
 const TaskTable = ({ tasks }: Props) => {
+  const [activeRowIndex, setActiveRowIndex] = useState<number | null>(null);
+  
+  const handleKeyDown = (
+    event: React.KeyboardEvent<HTMLTableRowElement>,
+    index: number
+  ) => {
+    if (event.key === "ArrowDown") {
+      setActiveRowIndex((prevIndex) =>
+        prevIndex === null ? 0 : Math.min(prevIndex + 1, tasks.length - 1)
+      );
+    } else if (event.key === "ArrowUp") {
+      setActiveRowIndex((prevIndex) =>
+        prevIndex === null ? 0 : Math.max(prevIndex - 1, 0)
+      );
+    } else if (event.key === "Enter" && activeRowIndex !== null) {
+      const task = tasks[activeRowIndex];
+      console.log(`Enter pressed, selecting task: ${task.name} (ID: ${task.id})`);
+    }
+  };
+
   return (
     <div className="relative w-full overflow-auto rounded-md border">
       <Table className="table-auto">
@@ -65,11 +86,21 @@ const TaskTable = ({ tasks }: Props) => {
         </TableHeader>
         <TableBody>
           {tasks.map((task, index) => (
-            <TableRow
-              key={index}
-              className={`cursor-pointer hover:bg-neutral-100/70 ${
-                index % 2 === 0 ? "bg-gray-50" : ""
-              }`}
+            <TableRow     
+              tabIndex={0}
+              key={task.id}
+              data-id={task.id}
+              onKeyDown={(event) => handleKeyDown(event, index)}
+              onFocus={() => setActiveRowIndex(index)}
+              className={
+                clsx({
+                  "cursor-pointer": true,
+                  "focus-visible: outline-none": true,
+                  "hover:bg-neutral-100/70": true,
+                  "outline outline-2 outline-blue-500": activeRowIndex === index,
+                  "bg-gray-50": index % 2 === 0,
+                })
+              }
             >
               <TableCell className="font-medium text-center">
                 {task.name}
