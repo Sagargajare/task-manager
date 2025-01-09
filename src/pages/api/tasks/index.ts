@@ -1,28 +1,5 @@
+import { ITaskApiResponse, ITask } from "@/types";
 import type { NextApiRequest, NextApiResponse } from "next";
-
-
-interface Task {
-  id: number;
-  name: string;
-  labels: string[];
-  status: string;
-  priority: string;
-  assignee: string;
-  due_date: string;
-  created_at: string;
-  updated_at: string;
-  comment: string;
-}
-
-interface ApiResponse {
-  tasks: Task[];
-  pagination: {
-    total: number;
-    has_next: boolean;
-    page_size: number;
-    offset: number;
-  };
-}
 
 interface ErrorResponse {
   message: string;
@@ -32,8 +9,8 @@ const STATUSES = ["OPEN", "CLOSED", "IN_PROGRESS"];
 const PRIORITIES = ["LOW", "MEDIUM", "HIGH", "URGENT", "CRITICAL", "BLOCKER", "TRIVIAL"];
 const LABELS = ["frontend", "backend", "urgent", "bug", "feature"];
 
-const generateTasks = (): Task[] => {
-  const tasks: Task[] = [];
+const generateTasks = (): ITask[] => {
+  const tasks: ITask[] = [];
   for (let i = 1; i <= 100; i++) {
     tasks.push({
       id: i,
@@ -55,12 +32,12 @@ let tasks = generateTasks();
 
 export default function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ApiResponse | ErrorResponse>
+  res: NextApiResponse<ITaskApiResponse | ErrorResponse>
 ) {
   const { method } = req;
 
   if (method === "GET") {
-    const { status, limit = "10", offset = "0" }: { status?: string; limit?: string; offset?: string } = req.query;
+    const { status, limit = "30", offset = "0" }: { status?: string; limit?: string; offset?: string } = req.query;
 
     const parsedLimit = parseInt(limit as string, 10);
     const parsedOffset = parseInt(offset as string, 10);
@@ -73,7 +50,7 @@ export default function handler(
 
     const paginatedTasks = filteredTasks.slice(parsedOffset, parsedOffset + parsedLimit);
 
-    const response: ApiResponse = {
+    const response: ITaskApiResponse = {
       tasks: paginatedTasks,
       pagination: {
         total: filteredTasks.length,
