@@ -6,7 +6,15 @@ interface ErrorResponse {
 }
 
 const STATUSES = ["OPEN", "CLOSED", "IN_PROGRESS"];
-const PRIORITIES = ["LOW", "MEDIUM", "HIGH", "URGENT", "CRITICAL", "BLOCKER", "TRIVIAL"];
+const PRIORITIES = [
+  "LOW",
+  "MEDIUM",
+  "HIGH",
+  "URGENT",
+  "CRITICAL",
+  "BLOCKER",
+  "TRIVIAL",
+];
 const LABELS = ["frontend", "backend", "urgent", "bug", "feature"];
 
 const generateTasks = (): ITask[] => {
@@ -19,9 +27,9 @@ const generateTasks = (): ITask[] => {
       status: STATUSES[i % STATUSES.length],
       priority: PRIORITIES[i % PRIORITIES.length],
       assignee: `assignee${i}@company.com`,
-      due_date: `2024-02-01T00:00:00Z`,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      due_date: new Date(Date.now() - i * 1000 * 60 * 60 * 48).toISOString(),
+      created_at: new Date(Date.now() - i * 1000 * 60 * 60 * 24).toISOString(),
+      updated_at: new Date(Date.now() - i * 1000 * 60 * 60 * 12).toISOString(),
       comment: `Task ${i} description`,
     });
   }
@@ -37,18 +45,25 @@ export default function handler(
   const { method } = req;
 
   if (method === "GET") {
-    const { status, limit = "30", offset = "0" }: { status?: string; limit?: string; offset?: string } = req.query;
+    const {
+      status,
+      limit = "30",
+      offset = "0",
+    }: { status?: string; limit?: string; offset?: string } = req.query;
 
     const parsedLimit = parseInt(limit as string, 10);
     const parsedOffset = parseInt(offset as string, 10);
 
     console.log("status", typeof parsedLimit, typeof parsedOffset);
-    
+
     const filteredTasks = tasks.filter(
       (task) => !status || task.status === status
     );
 
-    const paginatedTasks = filteredTasks.slice(parsedOffset, parsedOffset + parsedLimit);
+    const paginatedTasks = filteredTasks.slice(
+      parsedOffset,
+      parsedOffset + parsedLimit
+    );
 
     const response: ITaskApiResponse = {
       tasks: paginatedTasks,
