@@ -51,27 +51,41 @@ const PRIORITY_STYLES: Record<string, string> = {
 
 const TaskTable = ({ tasks }: Props) => {
   const [activeRowIndex, setActiveRowIndex] = useState<number | null>(null);
-  const { openDialog } = useDialogStore();
+  const { openDialog, updateTask, isOpen:isModalOpen } = useDialogStore();
   const { loading, loadMore } = useTaskStore();
 
   // Handle global keyboard navigation
   useEffect(() => {
     const handleGlobalKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "ArrowDown") {
+      if (event.key === "ArrowDown" && !isModalOpen) {
         event.preventDefault();
         setActiveRowIndex((prevIndex) => {
           if (prevIndex === null) return 0;
           return Math.min(prevIndex + 1, tasks.length - 1);
         });
-      } else if (event.key === "ArrowUp") {
+      } else if (event.key === "ArrowUp" && !isModalOpen) {
         event.preventDefault();
         setActiveRowIndex((prevIndex) => {
           if (prevIndex === null) return tasks.length - 1;
           return Math.max(prevIndex - 1, 0);
         });
-      } else if (event.key === "Enter" && activeRowIndex !== null) {
+      } else if (event.key === "Enter" && activeRowIndex !== null && !isModalOpen) {
         event.preventDefault();
         openDialog(tasks[activeRowIndex]);
+      } else if (event.key === "ArrowLeft" && activeRowIndex !== null && isModalOpen) {
+        event.preventDefault();
+        setActiveRowIndex((prevIndex) => {
+          if (prevIndex === null) return tasks.length - 1;
+          return Math.max(prevIndex - 1, 0);
+        });
+        updateTask(tasks[activeRowIndex - 1]);
+      } else if (event.key === "ArrowRight" && activeRowIndex !== null && isModalOpen) {
+        event.preventDefault();
+        setActiveRowIndex((prevIndex) => {
+          if (prevIndex === null) return 0;
+          return Math.min(prevIndex + 1, tasks.length - 1);
+        });
+        updateTask(tasks[activeRowIndex + 1]);
       }
     };
 
@@ -99,7 +113,6 @@ const TaskTable = ({ tasks }: Props) => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !loading) {
-          console.log("Load more tasks");
           loadMore();
         }
       },

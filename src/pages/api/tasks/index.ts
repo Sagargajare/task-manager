@@ -19,7 +19,7 @@ const LABELS = ["frontend", "backend", "urgent", "bug", "feature"];
 
 const generateTasks = (): ITask[] => {
   const tasks: ITask[] = [];
-  for (let i = 1; i <= 100; i++) {
+  for (let i = 1; i <= 200; i++) {
     tasks.push({
       id: i,
       name: `Task ${i}`,

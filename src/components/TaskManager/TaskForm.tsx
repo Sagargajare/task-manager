@@ -98,10 +98,17 @@ const TaskModalForm = () => {
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
-    if (!isOpen || !formData) return;
+    if (!formData) return;
 
-    if (e.key === "Enter" && e.ctrlKey) {
+    if (e.key === "Enter") {
+      e.preventDefault();
       handleSave();
+    } else if (e.key === "1") {
+      handleInputChange("status", "OPEN");
+    } else if (e.key === "2") {
+      handleInputChange("status", "IN_PROGRESS");
+    } else if (e.key === "3") {
+      handleInputChange("status", "CLOSED");
     }
   };
 
@@ -118,7 +125,7 @@ const TaskModalForm = () => {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={(open) => !open && closeDialog()}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent autoFocus className="max-w-3xl">
           <DialogTitle>Edit Task</DialogTitle>
           <DialogDescription>Update the task details below.</DialogDescription>
 
@@ -131,6 +138,7 @@ const TaskModalForm = () => {
                   value={formData.name}
                   onChange={(e) => handleInputChange("name", e.target.value)}
                   required
+                  autoFocus={false}
                 />
               </div>
 
@@ -143,6 +151,7 @@ const TaskModalForm = () => {
                     handleInputChange("labels", e.target.value.split(","))
                   }
                   placeholder="e.g., frontend, backend"
+                  autoFocus={false}
                 />
               </div>
 
@@ -234,6 +243,18 @@ const TaskModalForm = () => {
                 </Popover>
               </div>
             </div>
+            <div>
+              <Label htmlFor="comment">Comment</Label>
+              <Textarea
+                id="comment"
+                value={comment}
+                disabled
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Describe your changes..."
+                className="min-h-[100px]"
+                required
+              />
+            </div>
 
             <div className="flex justify-end gap-4 mt-4">
               <Button
@@ -245,6 +266,7 @@ const TaskModalForm = () => {
                 Save Changes
               </Button>
             </div>
+            
           </form>
         </DialogContent>
       </Dialog>
