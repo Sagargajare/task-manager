@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -10,10 +10,30 @@ import {
 import { ITask } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
-import { ArrowDownWideNarrow } from "lucide-react";
+import { ArrowDownWideNarrow, ArrowUpWideNarrow } from "lucide-react";
+import useTaskStore from "@/store/useTaskStore";
 
 type Props = {
   tasks: ITask[];
+};
+
+const SortingButton = ({ field, name }: { field: string; name: string }) => {
+  const { sortField, sortOrder, setSorting } = useTaskStore();
+
+  const handleClick = () => {
+    setSorting(field, sortOrder === -1 ? 1 : -1);
+  };
+
+  return (
+    <Button variant={"ghost"} onClick={() => handleClick()}>
+      {name}
+      {sortField === field && sortOrder === 1 ? (
+        <ArrowUpWideNarrow />
+      ) : (
+        <ArrowDownWideNarrow />
+      )}
+    </Button>
+  );
 };
 
 const PRIORITY_STYLES: Record<string, string> = {
@@ -23,7 +43,7 @@ const PRIORITY_STYLES: Record<string, string> = {
   URGENT: "bg-red-100 text-red-600",
   CRITICAL: "bg-red-50 text-red-400",
   BLOCKER: "bg-red-100 text-red-500",
-  TRIVIAL: "bg-gray-100 text-gray-600"
+  TRIVIAL: "bg-gray-100 text-gray-600",
 };
 
 const TaskTable = ({ tasks }: Props) => {
@@ -33,18 +53,12 @@ const TaskTable = ({ tasks }: Props) => {
         <TableHeader>
           <TableRow>
             <TableHead className="text-center">Name</TableHead>
+            <TableHead className="text-center">Assignee</TableHead>
             <TableHead className="text-center">
-              <Button variant={"ghost"}>Assignee</Button>
+              <SortingButton field={"priority"} name={"Priority"} />
             </TableHead>
             <TableHead className="text-center">
-              <Button variant={"ghost"}>
-                Priority <ArrowDownWideNarrow />
-              </Button>
-            </TableHead>
-            <TableHead className="text-center">
-              <Button variant={"ghost"}>
-                Created At <ArrowDownWideNarrow />
-              </Button>
+              <SortingButton field={"created_at"} name={"Created At"} />
             </TableHead>
             <TableHead className="text-center">Labels</TableHead>
           </TableRow>
@@ -72,7 +86,11 @@ const TaskTable = ({ tasks }: Props) => {
                 </Avatar>
               </TableCell>
               <TableCell className="text-center">
-                <span className={`text-xs font-bold ${PRIORITY_STYLES[task.priority]} p-1 rounded`}>
+                <span
+                  className={`text-xs font-bold ${
+                    PRIORITY_STYLES[task.priority]
+                  } p-1 rounded`}
+                >
                   {task.priority.toLowerCase()}
                 </span>
               </TableCell>
@@ -95,6 +113,14 @@ const TaskTable = ({ tasks }: Props) => {
               </TableCell>
             </TableRow>
           ))}
+
+          {tasks.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={5} className="text-center">
+                No tasks found
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </div>

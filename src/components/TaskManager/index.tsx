@@ -1,42 +1,76 @@
+"use client";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ITask, ITaskApiResponse } from "@/types";
 import TaskTable from "./TaskTable";
 import { Input } from "../ui/input";
+import useTaskStore from "@/store/useTaskStore";
+import { useEffect } from "react";
+import { Button } from "../ui/button";
+import { X } from "lucide-react";
 
 const TaskManager = ({ data }: { data: ITaskApiResponse }) => {
-  console.log(data.tasks);
-  const openTasks = data.tasks.filter((task: ITask) => task.status === "OPEN");
-  const closedTasks = data.tasks.filter(
-    (task: ITask) => task.status === "CLOSED"
-  );
-  const inProgressTasks = data.tasks.filter(
-    (task: ITask) => task.status === "IN_PROGRESS"
-  );
+  const {
+    currentTab,
+    setCurrentTab,
+    setTasks,
+    getTasksByStatus,
+    searchQuery,
+    setSearchQuery,
+    setSorting,
+  } = useTaskStore();
+
+  useEffect(() => {
+    setTasks(data.tasks);
+  }, [data.tasks]);
+
+  const openTasks = getTasksByStatus("OPEN");
+  const closedTasks = getTasksByStatus("CLOSED");
+  const inProgressTasks = getTasksByStatus("IN_PROGRESS");
 
   return (
     <div className="w-[300px] xs:w-[500px] md:w-[1200px] sm:w-[500] p-0 sm:p-4 md:p-20">
-        <div className="flex items-center py-4">
-        <Input
-          placeholder="Search tasks"
-          className="max-w-sm"
-        />
+      <div className="flex items-center py-4 justify-between">
+        <div className="relative max-w-2xl">
+          <Input
+            placeholder="Search tasks"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pr-10 max-w-lg"
+          />
+          <Button
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 rounded"
+            variant={"ghost"}
+            onClick={() => setSearchQuery("")}
+          >
+            <X />
+          </Button>
         </div>
+        <Button onClick={() => setSorting("created_at", 1)} variant={"outline"}>
+          Reset Sorting
+        </Button>
+      </div>
       <Tabs
-        defaultValue="open"
-        className=""
+        defaultValue={currentTab}
+        value={currentTab}
+        onValueChange={(tab) => setCurrentTab(tab as any)}
       >
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="open">Open {openTasks.length}</TabsTrigger>
-          <TabsTrigger value="inprogress">In Progress {inProgressTasks.length}</TabsTrigger>
-          <TabsTrigger value="closed">Completed {closedTasks.length}</TabsTrigger>
+          <TabsTrigger value="OPEN">Open {openTasks.length}</TabsTrigger>
+          <TabsTrigger value="IN_PROGRESS">
+            In Progress {inProgressTasks.length}
+          </TabsTrigger>
+          <TabsTrigger value="CLOSED">
+            Completed {closedTasks.length}
+          </TabsTrigger>
         </TabsList>
-        <TabsContent value="open">
+        <TabsContent value="OPEN">
           <TaskTable tasks={openTasks} />
         </TabsContent>
-        <TabsContent value="inprogress">
+        <TabsContent value="IN_PROGRESS">
           <TaskTable tasks={inProgressTasks} />
         </TabsContent>
-        <TabsContent value="closed">
+        <TabsContent value="CLOSED">
           <TaskTable tasks={closedTasks} />
         </TabsContent>
       </Tabs>
