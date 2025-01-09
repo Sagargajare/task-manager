@@ -69,6 +69,7 @@ const TaskTable = ({ tasks }: Props) => {
           return Math.max(prevIndex - 1, 0);
         });
       } else if (event.key === "Enter" && activeRowIndex !== null) {
+        event.preventDefault();
         openDialog(tasks[activeRowIndex]);
       }
     };
@@ -84,7 +85,7 @@ const TaskTable = ({ tasks }: Props) => {
       if (activeRow) {
         activeRow.scrollIntoView({
           behavior: "smooth",
-          block: "nearest"
+          block: "center",
         });
       }
     }

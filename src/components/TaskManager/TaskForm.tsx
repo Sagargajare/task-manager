@@ -60,6 +60,7 @@ const TaskModalForm = () => {
         due_date: task.due_date || "",
         comment: task.comment || "",
       });
+      setComment(task.comment || "");
     }
 
     return () => {
@@ -76,8 +77,6 @@ const TaskModalForm = () => {
   };
 
   const handleSave = () => {
-    console.log((new Error()).stack?.split("\n")[2]?.trim().split(" ")[1])
-    console.log("handleSave");
     setShowConfirmation(true);
   };
 
@@ -97,6 +96,22 @@ const TaskModalForm = () => {
     setShowConfirmation(false);
     setComment("");
   };
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (!isOpen || !formData) return;
+
+    if (e.key === "Enter" && e.ctrlKey) {
+      handleSave();
+    }
+  };
+
+  useEffect(() => {
+    // Add event listener for arrow key navigation
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   if (!formData) return null;
 
@@ -152,7 +167,9 @@ const TaskModalForm = () => {
                 <Label htmlFor="priority">Priority</Label>
                 <Select
                   value={formData.priority}
-                  onValueChange={(value) => handleInputChange("priority", value)}
+                  onValueChange={(value) =>
+                    handleInputChange("priority", value)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select Priority" />
@@ -162,6 +179,9 @@ const TaskModalForm = () => {
                     <SelectItem value="MEDIUM">Medium</SelectItem>
                     <SelectItem value="HIGH">High</SelectItem>
                     <SelectItem value="URGENT">Urgent</SelectItem>
+                    <SelectItem value="CRITICAL">Critical</SelectItem>
+                    <SelectItem value="BLOCKER">Blocker</SelectItem>
+                    <SelectItem value="TRIVIAL">Trivial</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -171,7 +191,9 @@ const TaskModalForm = () => {
                 <Input
                   id="assignee"
                   value={formData.assignee}
-                  onChange={(e) => handleInputChange("assignee", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("assignee", e.target.value)
+                  }
                   placeholder="e.g., assignee26@company.com"
                 />
               </div>
@@ -198,7 +220,11 @@ const TaskModalForm = () => {
                   <PopoverContent className="w-auto p-0 bg-white">
                     <Calendar
                       mode="single"
-                      selected={formData.due_date ? new Date(formData.due_date) : undefined}
+                      selected={
+                        formData.due_date
+                          ? new Date(formData.due_date)
+                          : undefined
+                      }
                       onSelect={(date) =>
                         handleInputChange("due_date", date?.toISOString() || "")
                       }
@@ -210,11 +236,12 @@ const TaskModalForm = () => {
             </div>
 
             <div className="flex justify-end gap-4 mt-4">
-              
-              <Button variant="outline" onClick={(e:any)=>{
-                console.log(e);
-                console.log("btn");
-                handleSave()}}>
+              <Button
+                variant="outline"
+                onClick={(e) => {
+                  handleSave();
+                }}
+              >
                 Save Changes
               </Button>
             </div>
@@ -228,7 +255,7 @@ const TaskModalForm = () => {
           <AlertDialogDescription>
             Please add a comment describing the changes made to this task.
           </AlertDialogDescription>
-          
+
           <div className="my-4">
             <Textarea
               value={comment}
@@ -241,7 +268,10 @@ const TaskModalForm = () => {
 
           <div className="flex justify-end gap-4">
             <AlertDialogCancel onClick={handleCancel}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirm} disabled={!comment.trim()}>
+            <AlertDialogAction
+              onClick={handleConfirm}
+              disabled={!comment.trim()}
+            >
               Confirm Changes
             </AlertDialogAction>
           </div>

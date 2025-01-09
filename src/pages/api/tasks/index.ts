@@ -54,8 +54,6 @@ export default function handler(
     const parsedLimit = parseInt(limit as string, 10);
     const parsedOffset = parseInt(offset as string, 10);
 
-    console.log("status", typeof parsedLimit, typeof parsedOffset);
-
     const filteredTasks = tasks.filter(
       (task) => !status || task.status === status
     );

@@ -12,10 +12,8 @@ const useDialogStore = create<DialogState>((set) => ({
     isOpen: false,
     task: null,
     openDialog: (task) => {
-        console.log("task in use", task);
         set({ isOpen: true, task })},
     closeDialog: () => {
-        console.log("auto closing")
         set({ isOpen: false, task: null })},
 }));
 

@@ -25,7 +25,6 @@ export const getServerSideProps: GetServerSideProps = async () => {
       },
     };
   } catch (error) {
-    console.error("error in fetching tasks:", error);
     return {
       props: {
         data: {
