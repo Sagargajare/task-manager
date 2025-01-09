@@ -1,16 +1,5 @@
 import { GetServerSideProps } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import TaskManager from "@/components/TaskManager";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 import { ITaskApiResponse } from "@/types";
 
 export default function Home({ data }: { data: ITaskApiResponse }) {

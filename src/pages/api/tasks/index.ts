@@ -28,7 +28,7 @@ const generateTasks = (): ITask[] => {
   return tasks;
 };
 
-let tasks = generateTasks();
+const tasks = generateTasks();
 
 export default function handler(
   req: NextApiRequest,
