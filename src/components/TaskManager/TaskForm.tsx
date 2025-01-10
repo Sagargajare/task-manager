@@ -44,6 +44,7 @@ const TaskModalForm = () => {
   const [formData, setFormData] = useState<ITask | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [comment, setComment] = useState("");
+  const [initialStatus, setInitialStatus] = useState("");
 
   // Sync formData with task when dialog opens or task changes
   useEffect(() => {
@@ -61,6 +62,7 @@ const TaskModalForm = () => {
         comment: task.comment || "",
       });
       setComment(task.comment || "");
+      setInitialStatus(task.status || "OPEN");
     }
 
     return () => {
@@ -77,7 +79,11 @@ const TaskModalForm = () => {
   };
 
   const handleSave = () => {
-    setShowConfirmation(true);
+    if (formData?.status !== initialStatus) {
+      setShowConfirmation(true);
+    } else {
+      handleConfirm();
+    }
   };
 
   const handleConfirm = () => {
@@ -98,12 +104,11 @@ const TaskModalForm = () => {
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
-
     // Prevent listening to keyboard events when typing in input fields
     const target = e.target as HTMLElement;
-      if (["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) {
+    if (["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) {
       return;
-      }
+    }
 
     if (e.key === "Enter") {
       e.preventDefault();
@@ -111,18 +116,21 @@ const TaskModalForm = () => {
     } else if (e.key === "1") {
       e.preventDefault();
       handleInputChange("status", "OPEN");
+      handleSave();
     } else if (e.key === "2") {
       e.preventDefault();
       handleInputChange("status", "IN_PROGRESS");
+      handleSave();
     } else if (e.key === "3") {
       e.preventDefault();
       handleInputChange("status", "CLOSED");
+      handleSave();
     }
   };
 
   useEffect(() => {
     // Add event listener for arrow key navigation
-    if(isOpen){
+    if (isOpen) {
       window.addEventListener("keydown", handleKeyDown);
     }
 
@@ -157,7 +165,7 @@ const TaskModalForm = () => {
                 <Label htmlFor="labels">Labels</Label>
                 <Input
                   id="labels"
-                  value={formData?.labels?.join(", ")}
+                  value={formData?.labels?.join(",")}
                   onChange={(e) =>
                     handleInputChange("labels", e.target.value.split(","))
                   }
@@ -277,7 +285,6 @@ const TaskModalForm = () => {
                 Save Changes
               </Button>
             </div>
-            
           </form>
         </DialogContent>
       </Dialog>
@@ -302,6 +309,7 @@ const TaskModalForm = () => {
           <div className="flex justify-end gap-4">
             <AlertDialogCancel onClick={handleCancel}>Cancel</AlertDialogCancel>
             <AlertDialogAction
+              autoFocus
               onClick={handleConfirm}
               disabled={!comment.trim()}
             >
