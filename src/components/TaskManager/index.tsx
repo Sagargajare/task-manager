@@ -18,7 +18,7 @@ const TaskManager = ({ data }: { data: ITaskApiResponse }) => {
     searchQuery,
     setSearchQuery,
     setSorting,
-    getFilteredTasks
+    getFilteredTasks,
   } = useTaskStore();
 
   useEffect(() => {
@@ -30,12 +30,13 @@ const TaskManager = ({ data }: { data: ITaskApiResponse }) => {
   return (
     <div className="w-[376px] xs:w-[500px] md:w-[1200px] sm:w-[500] p-0 sm:p-4 md:p-20 h-screen overflow-hidden">
       <div className="flex items-center py-4 justify-between">
-        <div className="relative max-w-2xl">
+        <div className="relative max-w-md w-full mr-1">
           <Input
+            width={"full"}
             placeholder="Search tasks"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pr-10 max-w-lg"
+            className="pr-10 border border-gray-400"
           />
           <Button
             className="absolute right-0 top-1/2 transform -translate-y-1/2 rounded"
@@ -45,7 +46,7 @@ const TaskManager = ({ data }: { data: ITaskApiResponse }) => {
             <X />
           </Button>
         </div>
-        <Button onClick={() => setSorting("created_at", 1)} variant={"outline"}>
+        <Button onClick={() => setSorting("created_at", 1)} className="border border-gray-400" variant={"outline"}>
           Reset Sorting
         </Button>
       </div>
@@ -55,13 +56,16 @@ const TaskManager = ({ data }: { data: ITaskApiResponse }) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onValueChange={(tab) => setCurrentTab(tab as any)}
       >
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="OPEN">Open {currentTab == "OPEN"?activeTabTasks.length:""}</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 border border-gray-400">
+          <TabsTrigger value="OPEN">
+            Open {currentTab == "OPEN" ? activeTabTasks.length : ""}
+          </TabsTrigger>
           <TabsTrigger value="IN_PROGRESS">
-            In Progress {currentTab == "IN_PROGRESS"?activeTabTasks.length:""}
+            In Progress{" "}
+            {currentTab == "IN_PROGRESS" ? activeTabTasks.length : ""}
           </TabsTrigger>
           <TabsTrigger value="CLOSED">
-            Completed {currentTab == "CLOSED"?activeTabTasks.length:""}
+            Completed {currentTab == "CLOSED" ? activeTabTasks.length : ""}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="OPEN">

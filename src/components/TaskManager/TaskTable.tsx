@@ -131,7 +131,7 @@ const TaskTable = ({ tasks }: Props) => {
   }, [loading]);
 
   return (
-    <div className="relative w-full rounded-md border h-full">
+    <div className="relative w-full rounded-md border border-gray-400 overflow-hidden h-full">
       <div className="max-h-[calc(100vh-15rem)] overflow-y-auto">
         <Table>
           <TableHeader className="sticky top-0 bg-white z-10">
