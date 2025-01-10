@@ -91,7 +91,7 @@ const TaskTable = ({ tasks }: Props) => {
 
     window.addEventListener("keydown", handleGlobalKeyDown);
     return () => window.removeEventListener("keydown", handleGlobalKeyDown);
-  }, [activeRowIndex, tasks, openDialog]);
+  }, [activeRowIndex, tasks, openDialog, isModalOpen]);
 
   // Scroll active row into view when it changes
   useEffect(() => {

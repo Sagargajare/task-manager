@@ -98,16 +98,18 @@ const TaskModalForm = () => {
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
-    if (!formData) return;
 
     if (e.key === "Enter") {
       e.preventDefault();
       handleSave();
     } else if (e.key === "1") {
+      e.preventDefault();
       handleInputChange("status", "OPEN");
     } else if (e.key === "2") {
+      e.preventDefault();
       handleInputChange("status", "IN_PROGRESS");
     } else if (e.key === "3") {
+      e.preventDefault();
       handleInputChange("status", "CLOSED");
     }
   };
