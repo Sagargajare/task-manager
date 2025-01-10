@@ -99,6 +99,12 @@ const TaskModalForm = () => {
 
   const handleKeyDown = (e: KeyboardEvent) => {
 
+    // Prevent listening to keyboard events when typing in input fields
+    const target = e.target as HTMLElement;
+      if (["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) {
+      return;
+      }
+
     if (e.key === "Enter") {
       e.preventDefault();
       handleSave();
@@ -116,11 +122,14 @@ const TaskModalForm = () => {
 
   useEffect(() => {
     // Add event listener for arrow key navigation
-    window.addEventListener("keydown", handleKeyDown);
+    if(isOpen){
+      window.addEventListener("keydown", handleKeyDown);
+    }
+
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [isOpen]);
 
   if (!formData) return null;
 
@@ -148,7 +157,7 @@ const TaskModalForm = () => {
                 <Label htmlFor="labels">Labels</Label>
                 <Input
                   id="labels"
-                  value={formData.labels.join(", ")}
+                  value={formData?.labels?.join(", ")}
                   onChange={(e) =>
                     handleInputChange("labels", e.target.value.split(","))
                   }
